@@ -111,7 +111,7 @@ def test_part():
     assert left == []
     assert right == [1,]
 
-def test_simple_correctness(small_k, small_test, small_test_result):
+def test_ksmalest_correctness(small_k, small_test, small_test_result):
     result = ksmallest(small_k, small_test)
     print(result)
     assert result == small_test_result
