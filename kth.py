@@ -34,12 +34,22 @@ def _merge(k, left, right):
     return ks
 
 def ksmallest(k, data):
+    """Return a list of the k smallest items in data.
+    """
     if k >= len(data):
         return sorted(data)
-
     ll, rr = _part(data)
     return _merge(k, ksmallest(k, ll), ksmallest(k, rr))
 
+def kth_smallest_item(k, data):
+    """returns the kth smallest item in data.
+
+    <k> counts like a person, i.e. is not zero-based
+    """
+    if len(data) < k:
+        raise IndexError("there must be more data than k")
+    else:
+        return ksmallest(k, data)[k-1]
 
 @fixture 
 def small_test():
@@ -105,4 +115,10 @@ def test_simple_correctness(small_k, small_test, small_test_result):
     result = ksmallest(small_k, small_test)
     print(result)
     assert result == small_test_result
+
+def test_kth_smallest_item(small_k, small_test, small_test_result):
+    result = kth_smallest_item(small_k, small_test)
+    expected = small_test_result[small_k-1]
+    print("rcvd:{} expected:{}".format(result, expected))
+    assert result == expected
 
