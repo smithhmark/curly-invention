@@ -51,6 +51,54 @@ def kth_smallest_item(k, data):
     else:
         return ksmallest(k, data)[k-1]
 
+
+def _part_inplace(extent):
+    start, stop = extent
+    mid = (stop - start) // 2
+    mid += start
+    return (start, mid), (mid, stop)
+
+def _merge_inplace(k, lindices, rindices, data):
+    ks = []
+    li, ri = 0, 0
+    for ii in range(k):
+        try:
+            lidx = lindices[li]
+        except IndexError:
+            ks.extend(rindices[ri:ri+k-len(ks)])
+            continue
+        try:
+            ridx = rindices[ri]
+        except IndexError:
+            ks.extend(lindices[li:li+k-len(ks)])
+            continue
+
+        if data[lidx] < data[ridx]:
+            ks.append(lidx)
+            li += 1
+        else:
+            ks.append(ridx)
+            ri += 1
+    return ks
+
+def _ksmallest_inner(k, extent, data):
+    span = extent[1] - extent[0]
+    if span <= k:
+        tmp = [(data[idx], idx) for idx in range(extent[0], extent[1])]
+        tmp.sort()
+        return [tt[1] for tt in tmp]
+    else:
+        lextent, rextent = _part_inplace(extent)
+        return _merge_inplace(k, 
+          _ksmallest_inner(k, lextent, data),
+          _ksmallest_inner(k, rextent, data),
+          data)
+
+def ksmallest_inplace(k, data):
+    extent = 0,len(data)
+    idxs = _ksmallest_inner(k, extent, data)
+    return [ data[ii] for ii in idxs]
+
 @fixture 
 def small_test():
     data = [100, 1, -7, 1000, 10000, 0, 12]
@@ -121,4 +169,27 @@ def test_kth_smallest_item(small_k, small_test, small_test_result):
     expected = small_test_result[small_k-1]
     print("rcvd:{} expected:{}".format(result, expected))
     assert result == expected
+
+def test_inplace_ksmallest(small_k, small_test, small_test_result):
+    result = ksmallest_inplace(small_k, small_test)
+    print(result)
+    assert result == small_test_result
+
+def test_inplace_merge(small_k, small_test, small_test_result):
+    k = 5
+    data = [1,2,3,4,5,6,7,8,9,10]
+    lindices = [0,1,2,3,4]
+    rindices = [5,6,7,8,9]
+    assert _merge_inplace(k, lindices, rindices, data) == lindices
+    k = 3
+    assert _merge_inplace(k, lindices, rindices, data) == lindices[:k]
+
+    data = [6,7,8,9,10,1,2,3,4,5,]
+    lindices = [0,1,2,3,4]
+    rindices = [5,6,7,8,9]
+    k = 5
+    assert _merge_inplace(k, lindices, rindices, data) == rindices
+    k = 3
+    assert _merge_inplace(k, lindices, rindices, data) == rindices[:k]
+
 
