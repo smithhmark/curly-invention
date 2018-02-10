@@ -1,3 +1,4 @@
+import time
 from itertools import islice
 
 def _part(array):
@@ -98,3 +99,24 @@ def ksmallest_inplace(k, data):
     idxs = _ksmallest_inner(k, extent, data)
     return [ data[ii] for ii in idxs]
 
+def average_function_duration(x, fn):
+    start = time.time()
+    for ii in range(x):
+        fn()
+    stop = time.time()
+    return (stop-start)/x
+
+def main():
+    input = list(range(1000000))
+    #output = ksmallest_inplace(5, input)
+    #output = ksmallest_inplace(5, input)
+    #print(output)
+
+    trial_size = 4
+    t1 = average_function_duration(trial_size, lambda:ksmallest(5, input))
+    print("copying version averaged {}".format(t1))
+    #t2 = average_function_duration(trial_size, lambda:ksmallest_inplace(5, input))
+    #print("inplace version averaged {}".format(t2))
+
+if __name__ == '__main__':
+    main()
