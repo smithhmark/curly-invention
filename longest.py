@@ -28,4 +28,4 @@ def test_longest():
     assert longest("abcdabcdefgabc") == "abcdefg"
     assert longest("abcdabcabcde") == "abcde"
     assert longest("abcabc") == "abc"
-
+    assert longest("GEEKSFORGEEKS") == "EKSFORG"
