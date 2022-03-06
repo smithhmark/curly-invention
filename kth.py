@@ -1,12 +1,19 @@
 import time
 from itertools import islice
 
+if '__buildin__' not in dir() or not hasattt(__buildin__, 'profile'):
+    def profile(func):
+        def inner(*args, **kwargs):
+            return func(*args, **kwargs)
+        return inner
+
 def _part(array):
     half = len(array) // 2
     left = array[:half]
     right = array[half:]
     return left, right
 
+@profile
 def _merge(k, left, right):
     ks = []
     li, ri = 0, 0
@@ -33,6 +40,7 @@ def _merge(k, left, right):
             ri += 1
     return ks
 
+@profile
 def ksmallest(k, data):
     """Return a list of the k smallest items in data.
     """
@@ -58,6 +66,7 @@ def _part_inplace(extent):
     mid += start
     return (start, mid), (mid, stop)
 
+@profile
 def _merge_inplace(k, lindices, rindices, data):
     ks = []
     li, ri = 0, 0
@@ -81,6 +90,7 @@ def _merge_inplace(k, lindices, rindices, data):
             ri += 1
     return ks
 
+@profile
 def _ksmallest_inner(k, extent, data):
     span = extent[1] - extent[0]
     if span <= k:
@@ -108,13 +118,13 @@ def average_function_duration(x, fn):
 
 def main():
     input = list(range(1000000))
-    #output = ksmallest_inplace(5, input)
+    output = ksmallest(5, input)
     #output = ksmallest_inplace(5, input)
     #print(output)
 
-    trial_size = 4
-    t1 = average_function_duration(trial_size, lambda:ksmallest(5, input))
-    print("copying version averaged {}".format(t1))
+    #trial_size = 4
+    #t1 = average_function_duration(trial_size, lambda:ksmallest(5, input))
+    #print("copying version averaged {}".format(t1))
     #t2 = average_function_duration(trial_size, lambda:ksmallest_inplace(5, input))
     #print("inplace version averaged {}".format(t2))
 
